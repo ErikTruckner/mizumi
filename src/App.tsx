@@ -1,6 +1,6 @@
-import React, { Suspense, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { ScrollControls, Scroll, useScroll } from "@react-three/drei";
+import { Suspense, useRef } from "react";
+import { Canvas } from "@react-three/fiber";
+import { ScrollControls, Scroll } from "@react-three/drei";
 import * as THREE from "three";
 import Brush from "./components/Brush";
 import CameraAnimator from "./components/CameraAnimator";
