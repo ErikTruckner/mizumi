@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
-import { Text } from '@react-three/drei';
-import * as THREE from 'three';
-import { createNoise2D } from 'simplex-noise';
+import React, { useMemo } from "react";
+import { Text } from "@react-three/drei";
+import * as THREE from "three";
+import { createNoise2D } from "simplex-noise";
 
 interface NizumiLogoProps {
   position: THREE.Vector3;
@@ -19,25 +19,34 @@ const NizumiLogo: React.FC<NizumiLogoProps> = ({ position }) => {
       const value = (noise2D(x / 10, y / 10) + 1) * 128;
       data[i] = value;
     }
-    return new THREE.DataTexture(data, size, size, THREE.RedFormat, THREE.UnsignedByteType);
+    return new THREE.DataTexture(
+      data,
+      size,
+      size,
+      THREE.RedFormat,
+      THREE.UnsignedByteType
+    );
   }, [noise2D]);
 
   // Define points for the 'Z' brush stroke - more points for better shape
-  const zVerts = useMemo(() => [
-    new THREE.Vector3(-0.5, 0.5, 0), // Top-left
-    new THREE.Vector3(0.5, 0.5, 0),  // Top-right
-    new THREE.Vector3(-0.5, -0.5, 0), // Bottom-left
-    new THREE.Vector3(0.5, -0.5, 0)   // Bottom-right
-  ], []);
+  const zVerts = useMemo(
+    () => [
+      new THREE.Vector3(-0.5, 0.5, 0), // Top-left
+      new THREE.Vector3(0.5, 0.5, 0), // Top-right
+      new THREE.Vector3(-0.5, -0.5, 0), // Bottom-left
+      new THREE.Vector3(0.5, -0.5, 0), // Bottom-right
+    ],
+    []
+  );
 
   // Create the 'Z' brush stroke geometry
   const zBrushGeometry = useMemo(() => {
-    const path = new THREE.CatmullRomCurve3(zVerts, false, 'catmullrom', 0); // Added curveType and tension
+    const path = new THREE.CatmullRomCurve3(zVerts, false, "catmullrom", 0); // Added curveType and tension
     const geometry = new THREE.TubeGeometry(path, 20, 0.1, 8, false); // Adjusted radius
 
     // Apply tapering and noise to vertices
-    const positionAttribute = geometry.getAttribute('position');
-    const normalAttribute = geometry.getAttribute('normal');
+    const positionAttribute = geometry.getAttribute("position");
+    const normalAttribute = geometry.getAttribute("normal");
     const tempNormal = new THREE.Vector3();
     const tempPosition = new THREE.Vector3();
 
@@ -48,9 +57,11 @@ const NizumiLogo: React.FC<NizumiLogoProps> = ({ position }) => {
       // Calculate tapering factor based on position along the sub-curve
       const t = i / (positionAttribute.count - 1); // Normalized position along the current tube segment
       let taperFactor = 1.0;
-      if (t < 0.2) { // Taper in at the start (first 20%)
+      if (t < 0.2) {
+        // Taper in at the start (first 20%)
         taperFactor = t / 0.2;
-      } else if (t > 0.8) { // Taper out at the end (last 20%)
+      } else if (t > 0.8) {
+        // Taper out at the end (last 20%)
         taperFactor = (1.0 - t) / 0.2;
       }
       taperFactor = Math.max(0.0, Math.min(1.0, taperFactor)); // Clamp between 0 and 1
@@ -60,10 +71,18 @@ const NizumiLogo: React.FC<NizumiLogoProps> = ({ position }) => {
       const taperedRadius = originalRadius * taperFactor;
 
       // Displace vertex along its normal based on noise and tapered radius
-      const noiseValue = noise2D(tempPosition.x * 10, tempPosition.y * 10) * 0.1; // Adjust multiplier for intensity
-      tempPosition.add(tempNormal.multiplyScalar(noiseValue + (taperedRadius - originalRadius)));
+      const noiseValue =
+        noise2D(tempPosition.x * 10, tempPosition.y * 10) * 0.1; // Adjust multiplier for intensity
+      tempPosition.add(
+        tempNormal.multiplyScalar(noiseValue + (taperedRadius - originalRadius))
+      );
 
-      positionAttribute.setXYZ(i, tempPosition.x, tempPosition.y, tempPosition.z);
+      positionAttribute.setXYZ(
+        i,
+        tempPosition.x,
+        tempPosition.y,
+        tempPosition.z
+      );
     }
     positionAttribute.needsUpdate = true;
 
@@ -81,10 +100,19 @@ const NizumiLogo: React.FC<NizumiLogoProps> = ({ position }) => {
       >
         Ni
       </Text>
-      
+
       {/* The 'Z' brush stroke */}
-      <mesh geometry={zBrushGeometry} position={[0, 0, 0]}> {/* Position 'Z' relative to group */}
-        <meshStandardMaterial color="black" bumpMap={bumpMap} bumpScale={0.2} roughness={0.5} metalness={0.5} /> {/* Apply bump map and material properties */}
+      <mesh geometry={zBrushGeometry} position={[0, 0, 0]}>
+        {" "}
+        {/* Position 'Z' relative to group */}
+        <meshStandardMaterial
+          color="black"
+          bumpMap={bumpMap}
+          bumpScale={0.2}
+          roughness={0.5}
+          metalness={0.5}
+        />{" "}
+        {/* Apply bump map and material properties */}
       </mesh>
 
       <Text

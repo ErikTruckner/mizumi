@@ -1,6 +1,6 @@
 import React, { Suspense, useRef } from "react";
-import { Canvas } from "@react-three/fiber";
-import { ScrollControls, Scroll } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { ScrollControls, Scroll, useScroll } from "@react-three/drei";
 import * as THREE from "three";
 import Brush from "./components/Brush";
 import CameraAnimator from "./components/CameraAnimator";
@@ -13,8 +13,7 @@ function App() {
     { title: "Section 2 Title", vert: new THREE.Vector3(-15, -40, 0) },
     { title: "Section 3 Title", vert: new THREE.Vector3(15, -80, 0) },
     { title: "Section 4 Title", vert: new THREE.Vector3(-15, -115, 0) },
-    { title: "Section 5 Title", vert: new THREE.Vector3(15, -160, 0) },
-    { title: "Final Section", vert: new THREE.Vector3(0, -170, 0) }, // New final section
+    { title: "Section 5 Title", vert: new THREE.Vector3(15, -155, 0) },
   ];
 
   const verts = [
@@ -26,13 +25,11 @@ function App() {
     new THREE.Vector3(-15, -80.5, 0),
     new THREE.Vector3(-15, -115, 0),
     new THREE.Vector3(0, -145.5, 0),
-    new THREE.Vector3(15, -160, 0),
-    new THREE.Vector3(0, -170, 0), // New final vert
+    new THREE.Vector3(15, -165, 0),
   ];
 
   const fullPathRef = useRef<THREE.CatmullRomCurve3 | null>(null);
-  const brushRef = useRef<THREE.Group>(null);
-  const finalLogoRef = useRef<THREE.Group>(null);
+  const brushGroupRef = useRef<THREE.Group>(null);
 
   return (
     <div className="w-screen h-screen">
@@ -46,7 +43,15 @@ function App() {
             <ambientLight intensity={0.5} />
             <pointLight position={[10, 10, 10]} />
             <group scale={[1, 1, 1]}>
-              <Brush verts={verts} fullPathRef={fullPathRef} />
+              <group ref={brushGroupRef}>
+                {" "}
+                {/* Group for the main brush */}
+                <Brush
+                  verts={verts}
+                  fullPathRef={fullPathRef}
+                  debugVerts={false}
+                />
+              </group>
             </group>
             <CameraAnimator />
             <BrushParticles />

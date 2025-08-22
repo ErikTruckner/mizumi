@@ -7,9 +7,11 @@ import { createNoise2D } from 'simplex-noise';
 interface BrushProps {
   verts?: THREE.Vector3[];
   fullPathRef: React.MutableRefObject<THREE.CatmullRomCurve3 | null>;
+  debugVerts?: boolean; // New prop for debugging
 }
 
-const VertDebugger: React.FC<{ verts: THREE.Vector3[] }> = ({ verts }) => {
+const VertDebugger: React.FC<{ verts: THREE.Vector3[]; visible: boolean }> = ({ verts, visible }) => {
+  if (!visible) return null;
   return (
     <group>
       {verts.map((vert, index) => (
@@ -22,7 +24,7 @@ const VertDebugger: React.FC<{ verts: THREE.Vector3[] }> = ({ verts }) => {
   );
 };
 
-const Brush: React.FC<BrushProps> = ({ verts = [], fullPathRef }) => {
+const Brush: React.FC<BrushProps> = ({ verts = [], fullPathRef, debugVerts = false }) => {
   const tubeRef = useRef<THREE.Mesh>(null!);
   const scroll = useScroll();
 
@@ -55,8 +57,9 @@ const Brush: React.FC<BrushProps> = ({ verts = [], fullPathRef }) => {
       const progress = scroll.offset;
       const tailLengthRatio = 0.125; // Shortened by half
 
-      const startProgress = Math.max(0, progress - tailLengthRatio);
-      const endProgress = progress;
+      const pathProgress = progress * (1 + tailLengthRatio);
+      const startProgress = Math.max(0, pathProgress - tailLengthRatio);
+      const endProgress = Math.min(1, pathProgress);
 
       const points = fullPath.getPoints(100); // Get many points for smooth sub-curve
       const startIndex = Math.floor(startProgress * (points.length - 1));
@@ -110,7 +113,7 @@ const Brush: React.FC<BrushProps> = ({ verts = [], fullPathRef }) => {
 
   return (
     <>
-      <VertDebugger verts={verts} />
+      <VertDebugger verts={verts} visible={debugVerts} />
       <mesh ref={tubeRef}>
         <meshStandardMaterial color="black" bumpMap={bumpMap} bumpScale={0.2} roughness={0.5} metalness={0.5} />
       </mesh>
