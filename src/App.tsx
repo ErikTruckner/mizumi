@@ -1,20 +1,38 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { ScrollControls, Scroll } from "@react-three/drei";
 import * as THREE from "three";
 import Brush from "./components/Brush";
 import CameraAnimator from "./components/CameraAnimator";
+import BrushParticles from "./components/BrushParticles";
+import NizumiLogo from "./components/NizumiLogo";
 
 function App() {
   const sections = [
-    { title: "Section 1 Title", vert: new THREE.Vector3(0, 0, 0) },
-    { title: "Section 2 Title", vert: new THREE.Vector3(0, -5, 0) },
-    { title: "Section 3 Title", vert: new THREE.Vector3(0, -10, 0) },
-    { title: "Section 4 Title", vert: new THREE.Vector3(0, -15, 0) },
-    { title: "Section 5 Title", vert: new THREE.Vector3(0, -20, 0) },
+    { title: "Section 1 Title", vert: new THREE.Vector3(0, 15, 0) },
+    { title: "Section 2 Title", vert: new THREE.Vector3(-15, -40, 0) },
+    { title: "Section 3 Title", vert: new THREE.Vector3(15, -80, 0) },
+    { title: "Section 4 Title", vert: new THREE.Vector3(-15, -115, 0) },
+    { title: "Section 5 Title", vert: new THREE.Vector3(15, -160, 0) },
+    { title: "Final Section", vert: new THREE.Vector3(0, -170, 0) }, // New final section
   ];
 
-  const verts = sections.map((section) => section.vert);
+  const verts = [
+    new THREE.Vector3(0, 15, 0),
+    new THREE.Vector3(7.5, -5, 0),
+    new THREE.Vector3(-15, -40, 0),
+    new THREE.Vector3(15, -60.5, 0),
+    new THREE.Vector3(15, -80, 0),
+    new THREE.Vector3(-15, -80.5, 0),
+    new THREE.Vector3(-15, -115, 0),
+    new THREE.Vector3(0, -145.5, 0),
+    new THREE.Vector3(15, -160, 0),
+    new THREE.Vector3(0, -170, 0), // New final vert
+  ];
+
+  const fullPathRef = useRef<THREE.CatmullRomCurve3 | null>(null);
+  const brushRef = useRef<THREE.Group>(null);
+  const finalLogoRef = useRef<THREE.Group>(null);
 
   return (
     <div className="w-screen h-screen">
@@ -28,22 +46,26 @@ function App() {
             <ambientLight intensity={0.5} />
             <pointLight position={[10, 10, 10]} />
             <group scale={[1, 1, 1]}>
-              <Brush verts={verts} />
+              <Brush verts={verts} fullPathRef={fullPathRef} />
             </group>
             <CameraAnimator />
-
+            <BrushParticles />
+            <NizumiLogo position={verts[0]} />
+            <NizumiLogo position={verts[verts.length - 1]} /> {/* Final logo */}
             <Scroll html>
               {sections.map((section, index) => (
                 <div
                   key={index}
-                  className={`flex items-center ${index % 2 === 0 ? "justify-start" : "justify-end"} w-screen h-screen p-8 bg-transparent`}
+                  className={`flex items-center ${
+                    index % 2 === 0 ? "justify-start" : "justify-end"
+                  } w-screen h-screen p-8 bg-transparent`}
                   style={{ position: "absolute", top: `${index * 100}vh` }}
                 >
                   <div className="w-1/2">
                     <h2 className="text-4xl font-bold">{section.title}</h2>
                     <p className="mt-4 text-lg">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                      do eiusmod tempor incididunt ut labore et dolore magna
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                      Sed do eiusmod tempor incididunt ut labore et dolore magna
                       aliqua.
                     </p>
                   </div>
