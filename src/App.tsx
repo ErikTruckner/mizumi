@@ -4,7 +4,6 @@ import { ScrollControls, Scroll } from "@react-three/drei";
 import * as THREE from "three";
 import Brush from "./components/Brush";
 import CameraAnimator from "./components/CameraAnimator";
-import BrushParticles from "./components/BrushParticles";
 import NizumiLogo from "./components/NizumiLogo";
 
 function App() {
@@ -54,7 +53,6 @@ function App() {
               </group>
             </group>
             <CameraAnimator />
-            <BrushParticles />
             <NizumiLogo position={verts[0]} />
             <NizumiLogo position={verts[verts.length - 1]} /> {/* Final logo */}
             <Scroll html>
