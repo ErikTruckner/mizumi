@@ -16,7 +16,7 @@ function App() {
       p: "It's not your fault. <br> Silcon Valley released the future <br> without giving anyone the instruction manual.",
     },
     {
-      p: "We build <i>Nizumi</i> to change this. <br> A warm, intuitive exosystem to help you understand <br> and personalize the AI landscape - for your life.",
+      p: "We built <i>Nizumi</i> to change this. <br> A warm, intuitive exosystem to help you understand <br> and personalize the AI landscape - for your life.",
     },
   ];
 
@@ -32,7 +32,7 @@ function App() {
   const brushGroupRef = useRef<THREE.Group>(null);
 
   return (
-    <div className="w-screen h-screen">
+    <div className="">
       <Canvas
         className="absolute top-0 left-0"
         camera={{ position: [0, 0, 30], fov: 75 }}
