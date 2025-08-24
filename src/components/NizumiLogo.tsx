@@ -18,15 +18,13 @@ const NizumiLogo: React.FC<NizumiLogoProps> = ({ position }) => {
         const u = x / 255;
         const v = y / 255;
 
-        // Edge noise
-        const edgeNoise = Math.pow(Math.abs(u - 0.5) * 2, 2.0);
-        const streaks = (noise2D(u * 10, v * 30) + 1) * 0.5;
-        let alpha = streaks > 0.8 ? 0 : 1;
-        alpha *= 1.0 - edgeNoise;
+        // Center-biased gradient
+        const centerBias = 1.0 - Math.abs(u - 0.5) * 2.0;
+        const gradient = THREE.MathUtils.smoothstep(centerBias, 0.0, 1.0);
 
-        // Stray streaks
-        const stray = (noise2D(u * 5, v * 10) + 1) * 0.5;
-        if (stray > 0.95) alpha = 0;
+        const streaks = (noise2D(u * 20, v * 60) + 1) * 0.5;
+        let alpha = streaks > 0.6 ? 0 : 1;
+        alpha *= gradient;
 
         return alpha * 255;
       }),
@@ -55,8 +53,8 @@ const NizumiLogo: React.FC<NizumiLogoProps> = ({ position }) => {
         varying vec2 vUv;
         void main() {
           float streakAlpha = texture2D(streakMap, vUv).r;
-          float tipTaper = smoothstep(0.0, 0.1, vUv.y);
-          float alpha = mix(1.0, streakAlpha, tipTaper);
+          float tipTaper = smoothstep(0.9, 1.0, vUv.y);
+          float alpha = mix(streakAlpha, 1.0, 1.0 - tipTaper);
           if (alpha < 0.1) discard;
           gl_FragColor = vec4(color, alpha);
         }
@@ -93,27 +91,10 @@ const NizumiLogo: React.FC<NizumiLogoProps> = ({ position }) => {
       tempNormal.fromBufferAttribute(normalAttribute, i);
       const v = uvAttribute.getY(i);
 
-      // Calculate tapering factor based on position along the sub-curve
-      const t = i / (positionAttribute.count - 1); // Normalized position along the current tube segment
-      let taperFactor = 1.0;
-      if (t < 0.2) {
-        // Taper in at the start (first 20%)
-        taperFactor = t / 0.2;
-      } else if (t > 0.8) {
-        // Taper out at the end (last 20%)
-        taperFactor = (1.0 - t) / 0.2;
-      }
-      taperFactor = Math.max(0.0, Math.min(1.0, taperFactor)); // Clamp between 0 and 1
-
-      // Apply tapering to the radius
-      const originalRadius = 0.1; // Original radius of the tube
-      const taperedRadius = originalRadius * taperFactor;
-
-      // Displace vertex along its normal based on noise and tapered radius
       const noiseValue =
         noise2D(v * 200, 0.5) * 0.1; // Adjust multiplier for intensity
       tempPosition.add(
-        tempNormal.multiplyScalar(noiseValue + (taperedRadius - originalRadius))
+        tempNormal.multiplyScalar(noiseValue)
       );
 
       positionAttribute.setXYZ(
@@ -144,6 +125,12 @@ const NizumiLogo: React.FC<NizumiLogoProps> = ({ position }) => {
       <mesh geometry={zBrushGeometry} position={[0, 0, 0]} material={shaderMaterial}>
         {" "}
         {/* Position 'Z' relative to group */}
+      </mesh>
+      <mesh position={zVerts[0]} material={shaderMaterial}>
+        <sphereGeometry args={[0.1, 32, 32]} />
+      </mesh>
+      <mesh position={zVerts[zVerts.length -1]} material={shaderMaterial}>
+        <sphereGeometry args={[0.1, 32, 32]} />
       </mesh>
 
       <Text

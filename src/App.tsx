@@ -8,23 +8,24 @@ import NizumiLogo from "./components/NizumiLogo";
 
 function App() {
   const sections = [
-    { title: "Section 1 Title", vert: new THREE.Vector3(0, 15, 0) },
-    { title: "Section 2 Title", vert: new THREE.Vector3(-15, -40, 0) },
-    { title: "Section 3 Title", vert: new THREE.Vector3(15, -80, 0) },
-    { title: "Section 4 Title", vert: new THREE.Vector3(-15, -115, 0) },
-    { title: "Section 5 Title", vert: new THREE.Vector3(15, -155, 0) },
+    {
+      h2: "Canela Thin Italic",
+      p: "You know AI is the most powerful tool humanity has ever built. <br> And somehow, you already feel behind.",
+    },
+    {
+      p: "It's not your fault. <br> Silcon Valley released the future <br> without giving anyone the instruction manual.",
+    },
+    {
+      p: "We build <i>Nizumi</i> to change this. <br> A warm, intuitive exosystem to help you understand <br> and personalize the AI landscape - for your life.",
+    },
   ];
 
   const verts = [
     new THREE.Vector3(0, 15, 0),
-    new THREE.Vector3(7.5, -5, 0),
-    new THREE.Vector3(-15, -40, 0),
-    new THREE.Vector3(15, -60.5, 0),
-    new THREE.Vector3(15, -80, 0),
-    new THREE.Vector3(-15, -80.5, 0),
-    new THREE.Vector3(-15, -115, 0),
-    new THREE.Vector3(0, -145.5, 0),
-    new THREE.Vector3(15, -165, 0),
+    new THREE.Vector3(7.5, -25, 0),
+    new THREE.Vector3(-15, -70, 0),
+
+    new THREE.Vector3(30, -125, 0),
   ];
 
   const fullPathRef = useRef<THREE.CatmullRomCurve3 | null>(null);
@@ -36,6 +37,7 @@ function App() {
         className="absolute top-0 left-0"
         camera={{ position: [0, 0, 30], fov: 75 }}
         gl={{ antialias: true }}
+        style={{ backgroundColor: "#FAF7F0" }}
       >
         <Suspense fallback={null}>
           <ScrollControls pages={sections.length} damping={0.1}>
@@ -48,29 +50,42 @@ function App() {
                 <Brush
                   verts={verts}
                   fullPathRef={fullPathRef}
-                  debugVerts={false}
+                  debugVerts={true}
                 />
               </group>
             </group>
             <CameraAnimator />
             <NizumiLogo position={verts[0]} />
-            <NizumiLogo position={verts[verts.length - 1]} /> {/* Final logo */}
+            {/* <NizumiLogo position={verts[verts.length - 1]} />  */}
             <Scroll html>
               {sections.map((section, index) => (
                 <div
                   key={index}
-                  className={`flex items-center ${
-                    index % 2 === 0 ? "justify-start" : "justify-end"
-                  } w-screen h-screen p-8 bg-transparent`}
-                  style={{ position: "absolute", top: `${index * 100}vh` }}
+                  className={`flex items-center justify-center w-screen h-screen p-8 bg-transparent`}
+                  style={{
+                    position: "absolute",
+                    top: `${index * 100}vh`,
+                    paddingTop: "30vh",
+                  }}
                 >
-                  <div className="w-1/2">
-                    <h2 className="text-4xl font-bold">{section.title}</h2>
-                    <p className="mt-4 text-lg">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua.
-                    </p>
+                  <div
+                    className={`w-1/3 mx-auto ${
+                      index === 1 ? "text-right" : "text-left"
+                    }`}
+                  >
+                    {section.h2 && (
+                      <h2
+                        className="text-4xl font-bold"
+                        style={{ fontFamily: "Canela-ThinItalic" }}
+                        dangerouslySetInnerHTML={{ __html: section.h2 }}
+                      />
+                    )}
+                    {section.p && (
+                      <p
+                        className="mt-4 text-lg"
+                        dangerouslySetInnerHTML={{ __html: section.p }}
+                      />
+                    )}
                   </div>
                 </div>
               ))}

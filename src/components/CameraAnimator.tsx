@@ -6,7 +6,7 @@ const CameraAnimator: React.FC = () => {
   const scroll = useScroll();
 
   useFrame(() => {
-    const page = scroll.offset * 30; // 4 is (number of sections - 1)
+    const page = scroll.offset * 20; // 4 is (number of sections - 1)
     camera.position.y = -page * 5; // 5 is the distance between verts
   });
 
