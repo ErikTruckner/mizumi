@@ -16,7 +16,7 @@ function App() {
       p: "It's not your fault. <br> Silcon Valley released the future <br> without giving anyone the instruction manual.",
     },
     {
-      p: "We built <i>Nizumi</i> to change this. <br> A warm, intuitive exosystem to help you understand <br> and personalize the AI landscape - for your life.",
+      p: "We built <i>Nizumi</i> to change this. <br> A warm, intuitive ecosystem to help you understand <br> and personalize the AI landscape - for your life.",
     },
   ];
 
@@ -32,7 +32,7 @@ function App() {
   const brushGroupRef = useRef<THREE.Group>(null);
 
   return (
-    <div className="">
+    <div className="w-full h-screen overflow-hidden">
       <Canvas
         className="absolute top-0 left-0"
         camera={{ position: [0, 0, 30], fov: 75 }}
@@ -50,7 +50,7 @@ function App() {
                 <Brush
                   verts={verts}
                   fullPathRef={fullPathRef}
-                  debugVerts={true}
+                  debugVerts={false}
                 />
               </group>
             </group>
@@ -61,7 +61,7 @@ function App() {
               {sections.map((section, index) => (
                 <div
                   key={index}
-                  className={`flex items-center justify-center w-screen h-screen p-8 bg-transparent`}
+                  className={`flex items-center justify-center w-screen h-screen bg-transparent`}
                   style={{
                     position: "absolute",
                     top: `${index * 100}vh`,
@@ -75,14 +75,20 @@ function App() {
                   >
                     {section.h2 && (
                       <h2
-                        className="text-4xl font-bold"
-                        style={{ fontFamily: "Canela-ThinItalic" }}
+                        style={{
+                          fontFamily: "Canela-ThinItalic",
+                          marginBottom: "1rem",
+                          fontSize: "3rem",
+                          fontWeight: "bold",
+                        }}
                         dangerouslySetInnerHTML={{ __html: section.h2 }}
                       />
                     )}
                     {section.p && (
                       <p
-                        className="mt-4 text-lg"
+                        style={{
+                          fontSize: "1rem",
+                        }}
                         dangerouslySetInnerHTML={{ __html: section.p }}
                       />
                     )}
